@@ -1,13 +1,14 @@
 import numpy as np
-
+import pdb
 
 class CameraInfo(object):
-    def __init__(self, clip_depth_distance_threshold, camera_matrix, distance_koef=1.):
+    def __init__(self, clip_depth_distance_threshold, camera_matrix, distance_koef=1., focal=525.0):
         self._inverted_camera_matrix = np.linalg.inv(camera_matrix)
         self._clip_depth_distance_threshold = clip_depth_distance_threshold * distance_koef
         self._color_mean = np.zeros(3, dtype=np.float32)
         self._color_std = np.ones(3, dtype=np.float32) * 256.
         self._distance_koef = distance_koef
+        self._focal = focal
 
     def process_depth_image(self, depth_image):
         depth_image = self.convert_depths(depth_image)
@@ -31,6 +32,9 @@ class CameraInfo(object):
 
     def get_inverted_camera_matrix(self):
         return self._inverted_camera_matrix
+    
+    def get_focal(self):
+        return self._focal
 
     def get_default_color(self):
         return (np.array([255., 255., 255.], dtype=np.float32) - self._color_mean) / self._color_std
@@ -40,7 +44,7 @@ class CameraInfo(object):
 
     def update_color_normalization_parameters(self, data):
         self._color_mean = np.mean(data.reshape(-1, 3), axis=0)
-        self._color_std = np.mean(data.reshape(-1, 3), axis=0)
+        self._color_std = np.std(data.reshape(-1, 3), axis=0)
 
     def process_positions(self, position):
         result = position.copy()

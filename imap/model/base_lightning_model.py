@@ -48,7 +48,7 @@ class BaseLightningModule(pl.LightningModule):
         output, losses = self.loss(batch)
         logged_losses = {}
         for key, value in losses.items():
-            logged_losses[f"{prefix}_{key}"] = value
+            logged_losses[f"{prefix}/{key}"] = value
         self.log_dict(logged_losses)
         if self.need_report_figures(batch_index, prefix):
             self.report_figures(batch, output)
@@ -71,6 +71,12 @@ class BaseLightningModule(pl.LightningModule):
             self.hparams.optimizer.betas = (beta1, beta2)
         optimizer = torch.optim.Adam(self.parameters(), **self.hparams.optimizer)
         if "scheduler" in self.hparams.keys():
-            scheduler = torch.optim.lr_scheduler.StepLR(optimizer, **self.hparams.scheduler)
-            return [optimizer], [scheduler]
+            scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, **self.hparams.scheduler)
+            return {
+                "optimizer": optimizer,
+                "lr_scheduler": {
+                    "scheduler": scheduler,
+                    "monitor": "train/loss"
+                }
+            }
         return optimizer

@@ -7,6 +7,7 @@ venv/
 
 # Dataset
 datasets/
+test_datasets/
 
 # Python chache
 __pycache__/
@@ -43,6 +44,7 @@ runs/
 *.gz
 *.npz
 *.db
+*.xyz
 
 # Python models
 *.npy
@@ -50,4 +52,7 @@ runs/
 *.pt
 *.pth
 *.ckpt
+old_logs/
 
+# utils
+torchmeta/

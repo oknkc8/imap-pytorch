@@ -1,0 +1,52 @@
+mode: 'train'
+max_epochs: 20
+batch_size: 1024
+num_workers: 8
+learning_rate: 1e-3
+
+logdir: 'logs/'
+log_img_freq_iter: 300
+num_log_img: 10
+log_img_scale: 5
+log_img_batch_count: 50
+log_mesh_freq_epoch: 1
+
+resume: False
+load_ckpt_path: ''
+
+dataset:
+  dataset_path: "test_datasets/tum rgbd/"
+  scene_name: "rgbd_dataset_freiburg1_desk"
+  association_file_name: "data_association_file.txt"
+  # frame_indices: [23, 60, 131, 206, 257, 325, 368, 407, 455, 558]
+  frame_indices: 60
+  distance_koef: 0.1
+  clip_distance_threshold: 8.0
+
+model:
+  mlp_color: True
+  mlp_num_layers: 8
+  mlp_color_num_layers: 1
+  hidden_features: 256
+  encoding_dimension: 94
+  coarse_sample_bins: 240
+  fine_sample_bins: 64
+  encoding_sigma: 25
+  minimal_depth: 0.01
+  sc_factor: 1.
+  mode: 'sdf'
+  volsdf_ab_fixed: True
+  alpha: 10.
+  beta: 0.1
+  model_type: 'relu'
+  pos_encoding: True
+  truncation: 0.05
+  loss_type: 'l2'
+  depth_loss_koef: 0.
+  color_loss_koef: 1.
+  sdf_loss_koef: 6e3
+  fs_loss_koef: 1e1
+  grad_loss_koef: 0.
+  upsample: 'neus'
+  variance_init: 0.05
+  speed_factor: 10.0
