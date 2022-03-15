@@ -27,7 +27,7 @@ class NERF(nn.Module):
                 self._mlp = MLP(input_dimension, 1,
                                 hidden_features=cfg.model.hidden_features,
                                 num_hidden_layers=cfg.model.mlp_num_layers,
-                                last_ac='tanh')
+                                last_ac='tanh' if cfg.model.mode == 'sdf' else None)
                 self._mlp_color = MLP(input_dimension + self._mlp.last_hidden_dim, 3,
                                       hidden_features=cfg.model.hidden_features,
                                       num_hidden_layers=cfg.model.mlp_color_num_layers)
