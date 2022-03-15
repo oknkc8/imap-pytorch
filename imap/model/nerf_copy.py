@@ -270,6 +270,18 @@ class NERF(nn.Module):
 
         return prediction, back_projected_points, last_geo_feature, sdf_grad
 
+    def get_sdf_color_value_query(self, xyz):
+        encodings = self._positional_encoding(xyz)
+        encodings_dir = self._positional_encoding_dir(torch.zeros_like(xyz).cuda())
+
+        sdf, last_geo_feature = self._mlp(encodings)
+        color, _ = self._mlp_color(torch.cat([last_geo_feature, encodings_dir], dim=-1))
+        color = torch.sigmoid(color).reshape(-1, 3)
+        sdf = sdf.reshape(-1, 1)
+
+        return sdf, color
+
+
     def reconstruct_color_and_depths(self, target_depths, sampled_depths, pixels, camera_positions, viewdirs, mlp_model, mlp_model_color):
         bins_count = sampled_depths.shape[0]
         sampled_depths = torch.sort(sampled_depths, dim=0).values

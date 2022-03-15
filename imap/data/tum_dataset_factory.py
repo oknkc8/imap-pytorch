@@ -32,7 +32,10 @@ class TUMDatasetFactory(object):
                 cfg.dataset.frame_indices = [i for i in range(total_length)]
         else:
             total_length = positions.shape[0]
-            cfg.dataset.frame_indices = [i for i in range(0, total_length, total_length // cfg.dataset.frame_indices)]
+            if cfg.dataset.frame_indices == 0:
+                cfg.dataset.frame_indices = [i for i in range(total_length)]
+            else:
+                cfg.dataset.frame_indices = [i for i in range(0, total_length, total_length // cfg.dataset.frame_indices)]
         positions = [TUMDatasetFactory.tum_position_to_matrix(positions[i]) for i in cfg.dataset.frame_indices]
         color_image_paths = [str(sequence_directory / associations.iloc[i, 1]) for i in cfg.dataset.frame_indices]
         depth_image_paths = [str(sequence_directory / associations.iloc[i, 3]) for i in cfg.dataset.frame_indices]

@@ -34,7 +34,7 @@ model:
   encoding_sigma: 25
   minimal_depth: 0.01
   sc_factor: 1.
-  mode: 'sdf'
+  mode: 'density'
   volsdf_ab_fixed: True
   alpha: 10.
   beta: 0.1

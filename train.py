@@ -96,8 +96,8 @@ def main():
     start_epoch = 0
     if cfg.resume:
         logger.info("Loading model{}".format(cfg.load_ckpt_path))
-        state_dict = torch.load(cfg.load_ckpt_path)
-        model.load_state_dict(state_dict, strict=False)
+        state_dict = torch.load(cfg.load_ckpt_path)[]
+        model.load_state_dict(state_dict["model"], strict=False)
         optimizer.param_groups[0]['initial_lr'] = state_dict['optimizer']['param_groups'][0]['lr']
         optimizer.param_groups[0]['lr'] = state_dict['optimizer']['param_groups'][0]['lr']
         start_epoch = state_dict['epoch'] + 1
@@ -216,7 +216,7 @@ def main():
 
         torch.save({
             'epoch': epoch,
-            'model': model.state_dict(),
+            'model': model.module.state_dict(),
             'optimizer': optimizer.state_dict()},
             "{}/model_{:0>4}.ckpt".format(os.path.join(logdir, "checkpoints"), epoch)
         )
