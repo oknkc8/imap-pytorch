@@ -96,7 +96,7 @@ def main():
     start_epoch = 0
     if cfg.resume:
         logger.info("Loading model{}".format(cfg.load_ckpt_path))
-        state_dict = torch.load(cfg.load_ckpt_path)[]
+        state_dict = torch.load(cfg.load_ckpt_path)
         model.load_state_dict(state_dict["model"], strict=False)
         optimizer.param_groups[0]['initial_lr'] = state_dict['optimizer']['param_groups'][0]['lr']
         optimizer.param_groups[0]['lr'] = state_dict['optimizer']['param_groups'][0]['lr']

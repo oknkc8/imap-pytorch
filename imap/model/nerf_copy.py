@@ -376,6 +376,9 @@ class NERF(nn.Module):
         denominator = torch.gather(cdf, 1, index_above) - torch.gather(cdf, 1, index_below)
         denominator = torch.where(denominator < 1e-10, torch.ones_like(denominator), denominator)
         t = (uniform - torch.gather(cdf, 1, index_below)) / denominator
+
+        index_below = self.clip_indexes(indexes - 1, 0, bins.shape[1] - 1)
+        index_above = self.clip_indexes(indexes, 0, bins.shape[1] - 1)
         bins_below = torch.gather(bins, 1, index_below)
         bins_above = torch.gather(bins, 1, index_above)
         hierarchical_sample = bins_below + t * (bins_above - bins_below)
