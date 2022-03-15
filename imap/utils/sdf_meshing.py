@@ -4,7 +4,9 @@ import skimage.measure
 import time
 import torch
 from loguru import logger
-fromt tqdm import tqdm
+from tqdm import tqdm
+
+import pdb
 
 def convert_sigma_samples_to_ply(
     input_3d_sigma_array: np.ndarray,
@@ -58,7 +60,7 @@ def convert_sigma_samples_to_ply(
         verts_tuple[i] = tuple(mesh_points[i, :])
 
     faces_building = []
-    for i in range(0, num_faces):
+    for i in tqdm(range(0, num_faces)):
         faces_building.append(((faces[i, :].tolist(),)))
     faces_tuple = np.array(faces_building, dtype=[("vertex_indices", "i4", (3,))])
 
@@ -79,7 +81,8 @@ def convert_sigma_samples_to_ply(
 
 def extract_mesh(model, volume_size=2.0, level=0.0, N=512, filepath='./result.ply', show_progress=True, ray_chunk=64*1024):
     s = volume_size
-    voxel_grid_origin = [-s/2., -s/2., -s/2.]
+    # voxel_grid_origin = [-s/2., -s/2., -s/2.]
+    voxel_grid_origin = [-0.1, -0.05, -0.15]
     volume_size = [s, s, s]
 
     overall_index = np.arange(0, N ** 3, 1).astype(np.int)
@@ -96,12 +99,17 @@ def extract_mesh(model, volume_size=2.0, level=0.0, N=512, filepath='./result.pl
     xyz[:, 0] = (xyz[:, 0] * (s/(N-1))) + voxel_grid_origin[2]
     xyz[:, 1] = (xyz[:, 1] * (s/(N-1))) + voxel_grid_origin[1]
     xyz[:, 2] = (xyz[:, 2] * (s/(N-1))) + voxel_grid_origin[0]
+    # pdb.set_trace()
     
-    def batchify(query_fn, inputs: torch.Tensor, chunk=chunk):
+    def batchify(query_fn, inputs: torch.Tensor, chunk=ray_chunk):
         out = []
         for i in tqdm(range(0, inputs.shape[0], ray_chunk), disable=not show_progress):
-            out_i = query_fn(torch.from_numpy(inputs[i:i+ray_chunk]).float().cuda()).data.cpu().numpy()
-            out.append(out_i)
+            sdf, color = query_fn(torch.from_numpy(inputs[i:i+ray_chunk]).float().cuda())
+            out.append(sdf.data.cpu().numpy())
+            
+            del sdf
+            del color
+
         out = np.concatenate(out, axis=0)
         return out
 
