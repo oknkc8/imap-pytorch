@@ -216,7 +216,7 @@ def main():
 
         torch.save({
             'epoch': epoch,
-            'model': model.module.state_dict(),
+            'model': model.state_dict(),
             'optimizer': optimizer.state_dict()},
             "{}/model_{:0>4}.ckpt".format(os.path.join(logdir, "checkpoints"), epoch)
         )
