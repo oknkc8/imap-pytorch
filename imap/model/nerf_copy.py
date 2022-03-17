@@ -516,19 +516,19 @@ class NERF(nn.Module):
         valid_weight = batch["depth"].nelement() / (mask.count_nonzero() + 1e-18)
 
         if self._cfg.model.loss_type == 'l1':
-            coarse_image_loss = torch.mean(self._loss(output['coarse_color'] * mask, batch["color"] * mask), dim=1)
+            coarse_image_loss = torch.mean(self._loss(output['coarse_color'] * mask[..., None], batch["color"] * mask[..., None]), dim=1)
             coarse_depth_weights = 1. / (torch.sqrt(output['coarse_depth_variance']) + 1e-18) * mask
             coarse_depth_loss = self._loss(output['coarse_depth'] * coarse_depth_weights, batch["depth"] * coarse_depth_weights)
 
-            fine_image_loss = torch.mean(self._loss(output['fine_color'] * mask, batch["color"] * mask), dim=1)
+            fine_image_loss = torch.mean(self._loss(output['fine_color'] * mask[..., None], batch["color"] * mask[..., None]), dim=1)
             fine_depth_weights = 1. / (torch.sqrt(output['fine_depth_variance']) + 1e-18) * mask
             fine_depth_loss = self._loss(output['fine_depth'] * fine_depth_weights, batch["depth"] * fine_depth_weights)
 
         elif self._cfg.model.loss_type == 'l2':
-            coarse_image_loss = torch.mean(self._mseloss(output['coarse_color'] * mask, batch["color"] * mask), dim=1)
+            coarse_image_loss = torch.mean(self._mseloss(output['coarse_color'] * mask[..., None], batch["color"] * mask[..., None]), dim=1)
             coarse_depth_loss = self._mseloss(output['coarse_depth'] * mask, batch["depth"] * mask) * valid_weight
 
-            fine_image_loss = torch.mean(self._mseloss(output['fine_color'] * mask, batch["color"] * mask), dim=1)
+            fine_image_loss = torch.mean(self._mseloss(output['fine_color'] * mask[..., None], batch["color"] * mask[..., None]), dim=1)
             fine_depth_loss = self._mseloss(output['fine_depth'] * mask, batch["depth"] * mask) * valid_weight
 
         if self._mode == 'sdf' or self._mode == 'volsdf':
