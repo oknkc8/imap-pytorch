@@ -43,6 +43,7 @@ def main():
                 + cfg.model.mode + '_' \
                 + cfg.model.model_type + '_' \
                 + ('2mlp_' if cfg.model.mlp_color else '') \
+                + str(cfg.model.coarse_sample_bins) + '_' + str(cfg.model.fine_sample_bins) + 'sampling_' \
                 + cfg.model.upsample + '_' \
                 + ('encoding_' if cfg.model.pos_encoding else '') \
                 + cfg.model.loss_type + '_' \
